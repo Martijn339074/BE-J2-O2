@@ -83,7 +83,6 @@ class ProductController extends Controller
         $product->load(['allergens', 'suppliers']);
         return view('products.edit', compact('product', 'allergens', 'suppliers'));
     }
-
     /**
      * Update the specified product in storage.
      */

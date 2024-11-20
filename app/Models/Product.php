@@ -57,18 +57,3 @@ class Allergen extends Model
         return $this->belongsToMany(Product::class, 'ProductPerAllergeen', 'AllergeenId', 'ProductId');
     }
 }
-
-class Supplier extends Model
-{
-    use HasFactory;
-
-    protected $table = 'Leverancier';
-    protected $primaryKey = 'Id';
-    public $timestamps = false;
-
-    public function products()
-    {
-        return $this->belongsToMany(Product::class, 'ProductPerLeverancier', 'LeverancierId', 'ProductId')
-                    ->withPivot('DatumLevering', 'Aantal', 'DatumEerstVolgendeLevering');
-    }
-}

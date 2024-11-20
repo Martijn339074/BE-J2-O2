@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MagazijnController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\SupplierController;
 
 Route::get('/', function () {
     return view('index');
@@ -15,6 +16,9 @@ Route::get('/leveranciers', function () {
 
 
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+
+Route::get('/suppliers', [SupplierController::class, 'index'])->name('suppliers.index');
+Route::get('/suppliers/{supplier}', [SupplierController::class, 'show'])->name('suppliers.show');
 
 Route::get('/dashboard', function () {
     return view('dashboard');

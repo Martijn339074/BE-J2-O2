@@ -20,13 +20,10 @@
                         <a class="nav-link" href="{{ url('/') }}">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url('/leveranciers') }}">Overzicht leveranciers</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url('/magazijn') }}">magazijn</a>
-                    </li>
-                    <li class="nav-item">
                         <a class="nav-link" href="{{ url('/products') }}">producten</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url('/suppliers') }}">leveranciers</a>
                     </li>
                 </ul>
             </div>
