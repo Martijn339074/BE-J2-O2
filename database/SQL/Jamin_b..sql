@@ -5,13 +5,13 @@ USE Jamin_b;
 
 -- Create tables
 CREATE TABLE Product (
-    Id INTEGER PRIMARY KEY,
+    Id INT AUTO_INCREMENT PRIMARY KEY,
     Naam VARCHAR(100) NOT NULL,
     Barcode VARCHAR(13) NOT NULL
 );
 
 CREATE TABLE Magazijn (
-    Id INTEGER PRIMARY KEY,
+    Id INT AUTO_INCREMENT PRIMARY KEY,
     ProductId INTEGER NOT NULL,
     VerpakkingsEenheid DECIMAL(5,2) NOT NULL,
     AantalAanwezig INTEGER,
@@ -19,13 +19,13 @@ CREATE TABLE Magazijn (
 );
 
 CREATE TABLE Allergeen (
-    Id INTEGER PRIMARY KEY,
+    Id INT AUTO_INCREMENT PRIMARY KEY,
     Naam VARCHAR(50) NOT NULL,
     Omschrijving VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE ProductPerAllergeen (
-    Id INTEGER PRIMARY KEY,
+    Id INT AUTO_INCREMENT PRIMARY KEY,
     ProductId INTEGER NOT NULL,
     AllergeenId INTEGER NOT NULL,
     FOREIGN KEY (ProductId) REFERENCES Product(Id),
@@ -33,7 +33,7 @@ CREATE TABLE ProductPerAllergeen (
 );
 
 CREATE TABLE ProductPerLeverancier (
-    Id INTEGER PRIMARY KEY,
+    Id INT AUTO_INCREMENT PRIMARY KEY,
     LeverancierId INTEGER NOT NULL,
     ProductId INTEGER NOT NULL,
     DatumLevering DATE NOT NULL,

@@ -1,44 +1,49 @@
 <x-layout>
     <div class="container">
-        <h1>{{ $supplier->Naam }} - Supplier Details</h1>
-        
-        <div class="card mb-4">
-            <div class="card-header">
-                <h2>Supplier Information</h2>
+        <h1>Geleverde producten - {{ $supplier->Naam }}</h1>
+    
+        @if(session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
             </div>
-            <div class="card-body">
-                <p><strong>Contact Person:</strong> {{ $supplier->ContactPersoon }}</p>
-                <p><strong>Supplier Number:</strong> {{ $supplier->LeverancierNummer }}</p>
-                <p><strong>Mobile:</strong> {{ $supplier->Mobiel }}</p>
-            </div>
-        </div>
+        @endif
     
         <div class="card">
-            <div class="card-header">
-                <h2>Products Supplied</h2>
-            </div>
             <div class="card-body">
                 <table class="table table-bordered">
                     <thead>
                         <tr>
-                            <th>Product Name</th>
-                            <th>Last Delivery Date</th>
-                            <th>Quantity</th>
-                            <th>Next Delivery Date</th>
+                            <th>Product</th>
+                            <th>Aantal in magazijn</th>
+                            <th>Laatste levering</th>
+                            <th>Aantal laatste levering</th>
+                            <th>Volgende levering</th>
+                            <th>Nieuwe levering</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach($supplier->products as $product)
                         <tr>
                             <td>{{ $product->Naam }}</td>
+                            <td>{{ $product->magazine->AantalAanwezig ?? 0 }}</td>
                             <td>{{ $product->pivot->DatumLevering }}</td>
                             <td>{{ $product->pivot->Aantal }}</td>
-                            <td>{{ $product->pivot->DatumEerstVolgendeLevering ?? 'Not scheduled' }}</td>
+                            <td>{{ $product->pivot->DatumEerstVolgendeLevering ?? 'Niet gepland' }}</td>
+                            <td>
+                                <a href="{{ route('suppliers.delivery-form', [$supplier->Id, $product->Id]) }}" 
+                                   class="btn btn-primary btn-sm">
+                                    <i class="fas fa-plus"></i>
+                                </a>
+                            </td>
                         </tr>
                         @endforeach
                     </tbody>
                 </table>
             </div>
+        </div>
+    
+        <div class="mt-3">
+            <a href="{{ route('suppliers.index') }}" class="btn btn-secondary">Terug naar overzicht</a>
         </div>
     </div>
 </x-layout>

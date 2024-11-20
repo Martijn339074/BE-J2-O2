@@ -20,6 +20,12 @@ Route::get('/products', [ProductController::class, 'index'])->name('products.ind
 Route::get('/suppliers', [SupplierController::class, 'index'])->name('suppliers.index');
 Route::get('/suppliers/{supplier}', [SupplierController::class, 'show'])->name('suppliers.show');
 
+Route::get('/suppliers/{supplier}/products', [SupplierController::class, 'showProducts'])->name('suppliers.products');
+Route::get('/suppliers/{supplier}/products/{product}/delivery', [SupplierController::class, 'showDeliveryForm'])->name('suppliers.delivery-form');
+Route::post('/suppliers/{supplier}/products/{product}/delivery', [SupplierController::class, 'processDelivery'])->name('suppliers.process-delivery');Route::get('/suppliers/{supplier}/products', [SupplierController::class, 'showProducts'])->name('suppliers.products');
+Route::get('/suppliers/{supplier}/products/{product}/delivery', [SupplierController::class, 'showDeliveryForm'])->name('suppliers.delivery-form');
+Route::post('/suppliers/{supplier}/products/{product}/delivery', [SupplierController::class, 'processDelivery'])->name('suppliers.process-delivery');
+
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
