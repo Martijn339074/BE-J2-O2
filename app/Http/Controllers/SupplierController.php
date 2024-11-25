@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\Supplier;
@@ -7,6 +6,7 @@ use App\Models\Product;
 use App\Models\Magazine;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\View;
 
 class SupplierController extends Controller
 {
@@ -39,6 +39,13 @@ class SupplierController extends Controller
     }
     public function showProducts($id)
     {
+        // Check if the view exists
+        if (!View::exists('suppliers.products')) {
+            // Redirect to suppliers index if view not found
+            return redirect()->route('suppliers.index')
+                ->with('error', 'Producten weergave niet beschikbaar');
+        }
+
         $supplier = Supplier::with(['products' => function($query) {
             $query->with('magazine')
                   ->withPivot('DatumLevering', 'Aantal', 'DatumEerstVolgendeLevering');
@@ -52,6 +59,13 @@ class SupplierController extends Controller
         $supplier = Supplier::findOrFail($supplierId);
         $product = Product::with('magazine')->findOrFail($productId);
 
+        // Check if product is inactive before showing the form
+        if (!$product->IsActief) {
+            return redirect()
+                ->route('suppliers.index')
+                ->with('error', "Het product {$product->Naam} van de leverancier {$supplier->Naam} wordt niet meer geproduceerd");
+        }
+
         return view('suppliers.delivery-form', compact('supplier', 'product'));
     }
 
@@ -61,6 +75,16 @@ class SupplierController extends Controller
             'aantal' => 'required|integer|min:1',
             'volgende_levering' => 'required|date|after:today',
         ]);
+
+        $supplier = Supplier::findOrFail($supplierId);
+        $product = Product::findOrFail($productId);
+
+        // Double-check if product is still active before processing
+        if (!$product->IsActief) {
+            return redirect()
+                ->route('suppliers.index')
+                ->with('error', "Het product {$product->Naam} van de leverancier {$supplier->Naam} wordt niet meer geproduceerd");
+        }
 
         DB::transaction(function () use ($request, $supplierId, $productId) {
             // Update or create new delivery record
@@ -80,7 +104,7 @@ class SupplierController extends Controller
             }
         });
 
-        return redirect()->route('suppliers.show', $supplierId)
+        return redirect()->route('suppliers.index')
                         ->with('success', 'Levering succesvol verwerkt');
     }
 }
