@@ -19,12 +19,12 @@
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th>Name</th>
-                    <th>Contact Person</th>
-                    <th>Supplier Number</th>
-                    <th>Mobile</th>
-                    <th>Number of Products</th>
-                    <th>Actions</th>
+                    <th>Naam</th>
+                    <th>Contact Persoon</th>
+                    <th>Leverancier Nummer</th>
+                    <th>Telefoon Nummer</th>
+                    <th>Aantal Producten</th>
+                    <th>Acties</th>
                 </tr>
             </thead>
             <tbody>
@@ -37,7 +37,7 @@
                     <td>{{ $supplier->Mobiel }}</td>
                     <td>{{ $supplier->products_count }}</td>
                     <td>
-                        <a href="{{ route('suppliers.show', $supplier->Id) }}" class="btn btn-primary btn-sm">View Details</a>
+                        <a href="{{ route('suppliers.show', $supplier->Id) }}" class="btn btn-primary btn-sm">Zie Producten</a>
                     </td>
                 </tr>
                 @endforeach
