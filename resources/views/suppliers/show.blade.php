@@ -7,40 +7,46 @@
                 {{ session('success') }}
             </div>
         @endif
-    
-        <div class="card">
-            <div class="card-body">
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th>Product</th>
-                            <th>Aantal in magazijn</th>
-                            <th>Laatste levering</th>
-                            <th>Aantal laatste levering</th>
-                            <th>Volgende levering</th>
-                            <th>Nieuwe levering</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($supplier->products as $product)
-                        <tr>
-                            <td>{{ $product->Naam }}</td>
-                            <td>{{ $product->magazine->AantalAanwezig ?? 0 }}</td>
-                            <td>{{ $product->pivot->DatumLevering }}</td>
-                            <td>{{ $product->pivot->Aantal }}</td>
-                            <td>{{ $product->pivot->DatumEerstVolgendeLevering ?? 'Niet gepland' }}</td>
-                            <td>
-                                <a href="{{ route('suppliers.delivery-form', [$supplier->Id, $product->Id]) }}" 
-                                   class="btn btn-primary btn-sm">
-                                    <i class="fas fa-plus"></i>
-                                </a>
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+
+        @if($supplier->products->isEmpty())
+            <div class="alert alert-warning" role="alert">
+                Dit bedrijf heeft tot nu toe geen producten geleverd aan Jamin.
             </div>
-        </div>
+        @else
+            <div class="card">
+                <div class="card-body">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Aantal in magazijn</th>
+                                <th>Laatste levering</th>
+                                <th>Aantal laatste levering</th>
+                                <th>Volgende levering</th>
+                                <th>Nieuwe levering</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($supplier->products as $product)
+                            <tr>
+                                <td>{{ $product->Naam }}</td>
+                                <td>{{ $product->magazine->AantalAanwezig ?? 0 }}</td>
+                                <td>{{ $product->pivot->DatumLevering }}</td>
+                                <td>{{ $product->pivot->Aantal }}</td>
+                                <td>{{ $product->pivot->DatumEerstVolgendeLevering ?? 'Niet gepland' }}</td>
+                                <td>
+                                    <a href="{{ route('suppliers.delivery-form', [$supplier->Id, $product->Id]) }}" 
+                                       class="btn btn-primary btn-sm">
+                                        <i class="fas fa-plus"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        @endif
     
         <div class="mt-3">
             <a href="{{ route('suppliers.index') }}" class="btn btn-secondary">Terug naar overzicht</a>

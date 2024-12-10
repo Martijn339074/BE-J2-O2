@@ -14,34 +14,41 @@
             </div>
         @endif
 
-        <h1>Suppliers</h1>
-        <table class="table table-bordered table-striped">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Naam</th>
-                    <th>Contact Persoon</th>
-                    <th>Leverancier Nummer</th>
-                    <th>Telefoon Nummer</th>
-                    <th>Aantal Producten</th>
-                    <th>Acties</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($suppliers as $supplier)
-                <tr>
-                    <td>{{ $supplier->Id }}</td>
-                    <td>{{ $supplier->Naam }}</td>
-                    <td>{{ $supplier->ContactPersoon }}</td>
-                    <td>{{ $supplier->LeverancierNummer }}</td>
-                    <td>{{ $supplier->Mobiel }}</td>
-                    <td>{{ $supplier->products_count }}</td>
-                    <td>
-                        <a href="{{ route('suppliers.show', $supplier->Id) }}" class="btn btn-primary btn-sm">Zie Producten</a>
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
+        <h1>Leveranciers</h1>
+
+        @if($suppliers->isEmpty())
+            <div class="alert alert-warning" role="alert">
+                Er zijn momenteel geen leveranciers beschikbaar.
+            </div>
+        @else
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>Naam</th>
+                        <th>Contact Persoon</th>
+                        <th>Leverancier Nummer</th>
+                        <th>Telefoon Nummer</th>
+                        <th>Aantal Producten</th>
+                        <th>Acties</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($suppliers as $supplier)
+                    <tr>
+                        <td>{{ $supplier->Naam }}</td>
+                        <td>{{ $supplier->ContactPersoon }}</td>
+                        <td>{{ $supplier->LeverancierNummer }}</td>
+                        <td>{{ $supplier->Mobiel }}</td>
+                        <td>{{ $supplier->products_count }}</td>
+                        <td>
+                            <a href="{{ route('suppliers.show', $supplier->Id) }}" class="btn btn-primary btn-sm">
+                                <i class="fas fa-box"></i>
+                            </a>
+                        </td>                    
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        @endif
     </div>
 </x-layout>
