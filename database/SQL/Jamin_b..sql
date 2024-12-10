@@ -16,6 +16,7 @@ CREATE TABLE Magazijn (
     ProductId INTEGER NOT NULL,
     VerpakkingsEenheid DECIMAL(5,2) NOT NULL,
     AantalAanwezig INTEGER,
+    LaatsteLevering DATETIME NULL,
     FOREIGN KEY (ProductId) REFERENCES Product(Id)
 );
 
@@ -45,17 +46,13 @@ CREATE TABLE ProductPerLeverancier (
 
 -- Insert sample data with IsActief values
 INSERT INTO Product (Id, Naam, Barcode, IsActief) VALUES 
-(1, 'Mintnopjes', '8719587231278', TRUE),
 (2, 'Schoolkrijt', '8719587326713', TRUE),
 (3, 'Honingdrop', '8719587327836', TRUE),
-(4, 'Zure Beren', '8719587321441', TRUE),
 (5, 'Cola Flesjes', '8719587321237', TRUE),
 (6, 'Turtles', '8719587322245', TRUE),
-(7, 'Witte Muizen', '8719587328256', TRUE),
 (8, 'Reuzen Slangen', '8719587325641', TRUE),
 (9, 'Zoute Rijen', '8719587322739', TRUE),
 (10, 'Winegums', '8719587327527', FALSE), 
-(11, 'Drop Munten', '8719587322345', TRUE),
 (12, 'Kruis Drop', '8719587322265', TRUE),
 (13, 'Zoute Ruitjes', '8719587323256', TRUE);
 

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\Supplier;
@@ -16,11 +17,11 @@ class SupplierController extends Controller
     public function index()
     {
         // Get suppliers with their product count, sorted in descending order
-        $suppliers = Supplier::withCount(['products' => function($query) {
+        $suppliers = Supplier::withCount(['products' => function ($query) {
             $query->distinct('ProductId');
         }])
-        ->orderBy('products_count', 'desc')
-        ->get();
+            ->orderBy('products_count', 'desc')
+            ->get();
 
         return view('suppliers.index', compact('suppliers'));
     }
@@ -31,7 +32,7 @@ class SupplierController extends Controller
     public function show(Supplier $supplier)
     {
         // Load related products with pivot information
-        $supplier->load(['products' => function($query) {
+        $supplier->load(['products' => function ($query) {
             $query->withPivot('DatumLevering', 'Aantal', 'DatumEerstVolgendeLevering');
         }]);
 
@@ -39,19 +40,34 @@ class SupplierController extends Controller
     }
     public function showProducts($id)
     {
-        // Check if the view exists
-        if (!View::exists('suppliers.products')) {
-            // Redirect to suppliers index if view not found
-            return redirect()->route('suppliers.index')
-                ->with('error', 'Producten weergave niet beschikbaar');
+        $supplier = Supplier::with(['products' => function ($query) {
+            $query->withPivot('DatumLevering', 'Aantal', 'DatumEerstVolgendeLevering')
+                ->with('magazine');
+        }])->findOrFail($id);
+    
+        // Group products by ID and select the latest delivery
+        $supplier->products = $supplier->products->groupBy('id')->map(function ($products) {
+            return $products->sortByDesc('pivot.DatumLevering')->first();
+        })->values();
+    
+        return view('suppliers.products', compact('supplier'));
+    }
+
+    public function deleteProduct($supplierId, $productId)
+    {
+        $supplier = Supplier::findOrFail($supplierId);
+        $product = $supplier->products()->where('products.id', $productId)->first();
+
+        if (!$product) {
+            return redirect()->route('suppliers.show', $supplierId)
+                ->with('error', 'Product not found for this supplier.');
         }
 
-        $supplier = Supplier::with(['products' => function($query) {
-            $query->with('magazine')
-                  ->withPivot('DatumLevering', 'Aantal', 'DatumEerstVolgendeLevering');
-        }])->findOrFail($id);
+        // Delete the pivot record
+        $supplier->products()->detach($product->id);
 
-        return view('suppliers.products', compact('supplier'));
+        return redirect()->route('suppliers.show', $supplierId)
+            ->with('success', 'Product deleted from supplier successfully.');
     }
 
     public function showDeliveryForm($supplierId, $productId)
@@ -79,32 +95,46 @@ class SupplierController extends Controller
         $supplier = Supplier::findOrFail($supplierId);
         $product = Product::findOrFail($productId);
 
-        // Double-check if product is still active before processing
         if (!$product->IsActief) {
             return redirect()
                 ->route('suppliers.index')
-                ->with('error', "Het product {$product->Naam} van de leverancier {$supplier->Naam} wordt niet meer geproduceerd");
+                ->with('error', "The product {$product->Naam} from supplier {$supplier->Naam} is no longer produced");
         }
 
         DB::transaction(function () use ($request, $supplierId, $productId) {
-            // Update or create new delivery record
-            $delivery = DB::table('ProductPerLeverancier')->insert([
-                'LeverancierId' => $supplierId,
-                'ProductId' => $productId,
-                'DatumLevering' => now(),
-                'Aantal' => $request->aantal,
-                'DatumEerstVolgendeLevering' => $request->volgende_levering,
-            ]);
+            $delivery = DB::table('ProductPerLeverancier')
+                ->where('LeverancierId', $supplierId)
+                ->where('ProductId', $productId)
+                ->first();
 
-            // Update warehouse quantity
+            if ($delivery) {
+                DB::table('ProductPerLeverancier')
+                    ->where('LeverancierId', $supplierId)
+                    ->where('ProductId', $productId)
+                    ->update([
+                        'DatumLevering' => now(),
+                        'Aantal' => $request->aantal,
+                        'DatumEerstVolgendeLevering' => $request->volgende_levering,
+                    ]);
+            } else {
+                DB::table('ProductPerLeverancier')->insert([
+                    'LeverancierId' => $supplierId,
+                    'ProductId' => $productId,
+                    'DatumLevering' => now(),
+                    'Aantal' => $request->aantal,
+                    'DatumEerstVolgendeLevering' => $request->volgende_levering,
+                ]);
+            }
+
             $magazine = Magazine::where('ProductId', $productId)->first();
             if ($magazine) {
                 $magazine->AantalAanwezig += $request->aantal;
+                $magazine->LaatsteLevering = now();
                 $magazine->save();
             }
         });
 
         return redirect()->route('suppliers.index')
-                        ->with('success', 'Levering succesvol verwerkt');
+            ->with('success', 'Delivery processed successfully');
     }
 }

@@ -19,6 +19,7 @@ Route::get('/products', [ProductController::class, 'index'])->name('products.ind
 
 Route::get('/suppliers', [SupplierController::class, 'index'])->name('suppliers.index');
 Route::get('/suppliers/{supplier}', [SupplierController::class, 'show'])->name('suppliers.show');
+Route::delete('/suppliers/{supplierId}/products/{productId}', [SupplierController::class, 'deleteProduct'])->name('suppliers.delete-product');
 
 Route::get('/suppliers/{supplier}/products', [SupplierController::class, 'showProducts'])->name('suppliers.products');
 Route::get('/suppliers/{supplier}/products/{product}/delivery', [SupplierController::class, 'showDeliveryForm'])->name('suppliers.delivery-form');

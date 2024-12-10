@@ -13,11 +13,7 @@ class Magazine extends Model
     protected $primaryKey = 'Id';
     public $timestamps = false;
 
-    protected $fillable = [
-        'ProductId',
-        'VerpakkingsEenheid',
-        'AantalAanwezig'
-    ];
+    protected $fillable = ['ProductId', 'VerpakkingsEenheid', 'AantalAanwezig', 'LaatsteLevering'];
 
     public function product()
     {
