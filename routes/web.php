@@ -27,6 +27,9 @@ Route::post('/suppliers/{supplier}/products/{product}/delivery', [SupplierContro
 Route::get('/suppliers/{supplier}/products/{product}/delivery', [SupplierController::class, 'showDeliveryForm'])->name('suppliers.delivery-form');
 Route::post('/suppliers/{supplier}/products/{product}/delivery', [SupplierController::class, 'processDelivery'])->name('suppliers.process-delivery');
 
+Route::get('/suppliers/{supplier}/edit', [SupplierController::class, 'edit'])->name('suppliers.edit');
+Route::put('/suppliers/{supplier}', [SupplierController::class, 'update'])->name('suppliers.update');
+
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');

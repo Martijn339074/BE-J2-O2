@@ -7,15 +7,14 @@ CREATE TABLE Product (
     Id INT AUTO_INCREMENT PRIMARY KEY,
     Naam VARCHAR(100) NOT NULL,
     Barcode VARCHAR(13) NOT NULL,
-    IsActief BOOLEAN DEFAULT TRUE  -- Added IsActief column with default value TRUE
+    IsActief BOOLEAN DEFAULT TRUE
 );
 
--- Rest of the table creation statements remain the same
 CREATE TABLE Magazijn (
     Id INT AUTO_INCREMENT PRIMARY KEY,
-    ProductId INTEGER NOT NULL,
+    ProductId INT NOT NULL,
     VerpakkingsEenheid DECIMAL(5,2) NOT NULL,
-    AantalAanwezig INTEGER,
+    AantalAanwezig INT,
     LaatsteLevering DATETIME NULL,
     FOREIGN KEY (ProductId) REFERENCES Product(Id)
 );
@@ -28,23 +27,42 @@ CREATE TABLE Allergeen (
 
 CREATE TABLE ProductPerAllergeen (
     Id INT AUTO_INCREMENT PRIMARY KEY,
-    ProductId INTEGER NOT NULL,
-    AllergeenId INTEGER NOT NULL,
+    ProductId INT NOT NULL,
+    AllergeenId INT NOT NULL,
     FOREIGN KEY (ProductId) REFERENCES Product(Id),
     FOREIGN KEY (AllergeenId) REFERENCES Allergeen(Id)
 );
 
-CREATE TABLE ProductPerLeverancier (
-    Id INT AUTO_INCREMENT PRIMARY KEY,
-    LeverancierId INTEGER NOT NULL,
-    ProductId INTEGER NOT NULL,
-    DatumLevering DATE NOT NULL,
-    Aantal INTEGER NOT NULL,
-    DatumEerstVolgendeLevering DATE,
-    FOREIGN KEY (ProductId) REFERENCES Product(Id)
+CREATE TABLE Leverancier (
+    Id INT PRIMARY KEY,
+    Naam VARCHAR(100) NOT NULL,
+    ContactPersoon VARCHAR(100) NOT NULL,
+    LeverancierNummer VARCHAR(11) NOT NULL,
+    Mobiel VARCHAR(11) NOT NULL,
+    ContactId INT NOT NULL,
+    FOREIGN KEY (ContactId) REFERENCES Contact(Id)
 );
 
--- Insert sample data with IsActief values
+CREATE TABLE Contact (
+    Id INT PRIMARY KEY,
+    Straat VARCHAR(100) NOT NULL,
+    Huisnummer INT NOT NULL,
+    Postcode VARCHAR(6) NOT NULL,
+    Stad VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE ProductPerLeverancier (
+    Id INT AUTO_INCREMENT PRIMARY KEY,
+    LeverancierId INT NOT NULL,
+    ProductId INT NOT NULL,
+    DatumLevering DATE NOT NULL,
+    Aantal INT NOT NULL,
+    DatumEerstVolgendeLevering DATE,
+    FOREIGN KEY (ProductId) REFERENCES Product(Id),
+    FOREIGN KEY (LeverancierId) REFERENCES Leverancier(Id)
+);
+
+-- Insert sample data
 INSERT INTO Product (Id, Naam, Barcode, IsActief) VALUES 
 (2, 'Schoolkrijt', '8719587326713', TRUE),
 (3, 'Honingdrop', '8719587327836', TRUE),
@@ -56,7 +74,6 @@ INSERT INTO Product (Id, Naam, Barcode, IsActief) VALUES
 (12, 'Kruis Drop', '8719587322265', TRUE),
 (13, 'Zoute Ruitjes', '8719587323256', TRUE);
 
--- Rest of the INSERT statements remain the same
 INSERT INTO Magazijn (Id, ProductId, VerpakkingsEenheid, AantalAanwezig) VALUES
 (1, 1, 5, 453),
 (2, 2, 2.5, 400),
@@ -93,23 +110,21 @@ INSERT INTO ProductPerAllergeen (Id, ProductId, AllergeenId) VALUES
 (11, 13, 4),
 (12, 13, 5);
 
--- Create Leverancier table
-CREATE TABLE Leverancier (
-    Id INTEGER PRIMARY KEY,
-    Naam VARCHAR(100) NOT NULL,
-    ContactPersoon VARCHAR(100) NOT NULL,
-    LeverancierNummer VARCHAR(11) NOT NULL,
-    Mobiel VARCHAR(11) NOT NULL
-);
+INSERT INTO Contact (Id, Straat, Huisnummer, Postcode, Stad) VALUES
+(1, 'Van Gilslaan', 34, '1045CB', 'Hilvarenbeek'),
+(2, 'Den Dolderpad', 2, '1067RC', 'Utrecht'),
+(3, 'Fredo Raalteweg', 257, '1236OP', 'Nijmegen'),
+(4, 'Bertrand Russellhof', 21, '2034AP', 'Den Haag'),
+(5, 'Leon van Bonstraat', 213, '145XC', 'Lunteren'),
+(6, 'Bea van Lingenlaan', 234, '2197FG', 'Sint Pancras');
 
--- Insert Leverancier data
-INSERT INTO Leverancier (Id, Naam, ContactPersoon, LeverancierNummer, Mobiel) VALUES
-(1, 'Venco', 'Bert van Linge', 'L1029384719', '06-28493827'),
-(2, 'Astra Sweets', 'Jasper del Monte', 'L1029284315', '06-39398734'),
-(3, 'Haribo', 'Sven Stalman', 'L1029324748', '06-24383291'),
-(4, 'Basset', 'Joyce Stelterberg', 'L1023845773', '06-48293823'),
-(5, 'De Bron', 'Remco Veenstra', 'L1023857736', '06-34291234'),
-(6, 'Quality Street', 'Johan Nooij', 'L1029234586', '06-23458456');
+INSERT INTO Leverancier (Id, Naam, ContactPersoon, LeverancierNummer, Mobiel, ContactId) VALUES
+(1, 'Venco', 'Bert van Linge', 'L1029384719', '06-28493827', 1),
+(2, 'Astra Sweets', 'Jasper del Monte', 'L1029284315', '06-39398734', 2),
+(3, 'Haribo', 'Sven Stalman', 'L1029324748', '06-24383291', 3),
+(4, 'Basset', 'Joyce Stelterberg', 'L1023845773', '06-48293823', 4),
+(5, 'De Bron', 'Remco Veenstra', 'L1023857736', '06-34291234', 5),
+(6, 'Quality Street', 'Johan Nooij', 'L1029234586', '06-23458456', 6);
 
 INSERT INTO ProductPerLeverancier (Id, LeverancierId, ProductId, DatumLevering, Aantal, DatumEerstVolgendeLevering) VALUES
 (1, 1, 1, '2024-11-09', 23, '2024-11-16'),
@@ -129,8 +144,3 @@ INSERT INTO ProductPerLeverancier (Id, LeverancierId, ProductId, DatumLevering, 
 (15, 5, 11, '2024-11-19', 60, '2024-11-26'),
 (16, 5, 12, '2024-11-11', 45, NULL),
 (17, 5, 13, '2024-11-12', 23, NULL);
-
--- Add foreign key constraint to ProductPerLeverancier table
-ALTER TABLE ProductPerLeverancier
-ADD CONSTRAINT FK_ProductPerLeverancier_Leverancier
-FOREIGN KEY (LeverancierId) REFERENCES Leverancier(Id);

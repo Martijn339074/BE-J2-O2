@@ -13,13 +13,25 @@ class Supplier extends Model
     protected $primaryKey = 'Id';
     public $timestamps = false;
 
+    protected $fillable = [
+        'Naam',
+        'ContactPersoon',
+        'LeverancierNummer',
+        'Mobiel',
+        'ContactId'
+    ];
+
+    public function contact()
+    {
+        return $this->belongsTo(Contact::class, 'ContactId', 'Id');
+    }
+
     public function products()
     {
         return $this->belongsToMany(Product::class, 'ProductPerLeverancier', 'LeverancierId', 'ProductId')
                     ->withPivot('DatumLevering', 'Aantal', 'DatumEerstVolgendeLevering');
     }
 
-    // Accessor to get the number of unique products for each supplier
     public function getProductCountAttribute()
     {
         return $this->products()->distinct('ProductId')->count();

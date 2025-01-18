@@ -34,21 +34,28 @@
                 </thead>
                 <tbody>
                     @foreach($suppliers as $supplier)
-                    <tr>
-                        <td>{{ $supplier->Naam }}</td>
-                        <td>{{ $supplier->ContactPersoon }}</td>
-                        <td>{{ $supplier->LeverancierNummer }}</td>
-                        <td>{{ $supplier->Mobiel }}</td>
-                        <td>{{ $supplier->products_count }}</td>
-                        <td>
-                            <a href="{{ route('suppliers.show', $supplier->Id) }}" class="btn btn-primary btn-sm">
-                                <i class="fas fa-box"></i>
-                            </a>
-                        </td>                    
-                    </tr>
+                        <tr>
+                            <td>{{ $supplier->Naam }}</td>
+                            <td>{{ $supplier->ContactPersoon }}</td>
+                            <td>{{ $supplier->LeverancierNummer }}</td>
+                            <td>{{ $supplier->Mobiel }}</td>
+                            <td>{{ $supplier->products_count }}</td>
+                            <td>
+                                <a href="{{ route('suppliers.show', $supplier->Id) }}" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-box"></i>
+                                </a>
+                                <a href="{{ route('suppliers.edit', $supplier->Id) }}" class="btn btn-warning btn-sm">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                            </td>
+                        </tr>
                     @endforeach
                 </tbody>
             </table>
+
+            <div class="d-flex justify-content-center mt-4">
+                {{ $suppliers->links('vendor.pagination.bootstrap-5') }}
+            </div>
         @endif
     </div>
 </x-layout>

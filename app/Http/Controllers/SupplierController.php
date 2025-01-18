@@ -16,12 +16,12 @@ class SupplierController extends Controller
      */
     public function index()
     {
-        // Get suppliers with their product count, sorted in descending order
+        // Get suppliers with their product count, sorted in descending order, paginated
         $suppliers = Supplier::withCount(['products' => function ($query) {
             $query->distinct('ProductId');
         }])
             ->orderBy('products_count', 'desc')
-            ->get();
+            ->paginate(4); // 4 items per page
 
         return view('suppliers.index', compact('suppliers'));
     }
@@ -44,13 +44,65 @@ class SupplierController extends Controller
             $query->withPivot('DatumLevering', 'Aantal', 'DatumEerstVolgendeLevering')
                 ->with('magazine');
         }])->findOrFail($id);
-    
+
         // Group products by ID and select the latest delivery
         $supplier->products = $supplier->products->groupBy('id')->map(function ($products) {
             return $products->sortByDesc('pivot.DatumLevering')->first();
         })->values();
-    
+
         return view('suppliers.products', compact('supplier'));
+    }
+
+    public function edit(Supplier $supplier)
+    {
+        $supplier->load('contact');
+        return view('suppliers.edit', compact('supplier'));
+    }
+
+    public function update(Request $request, Supplier $supplier)
+    {
+        $request->validate([
+            'Naam' => 'required|string|max:100',
+            'ContactPersoon' => 'required|string|max:100',
+            'LeverancierNummer' => 'required|string|max:11',
+            'Mobiel' => 'required|string|max:11',
+            'Straat' => 'required|string|max:100',
+            'Huisnummer' => 'required|integer',
+            'Postcode' => 'required|string|max:6',
+            'Stad' => 'required|string|max:100',
+        ]);
+    
+        try {
+            // Simulate a technical error when mobile number is changed to 06-39398825
+            if ($request->Mobiel === '06-39398825') {
+                throw new \Exception('Door een technische storing is het niet mogelijk de wijziging door te voeren. Probeer het op een later moment nog eens.');
+            }
+    
+            DB::transaction(function () use ($request, $supplier) {
+                // Update contact information
+                $supplier->contact->update([
+                    'Straat' => $request->Straat,
+                    'Huisnummer' => $request->Huisnummer,
+                    'Postcode' => $request->Postcode,
+                    'Stad' => $request->Stad,
+                ]);
+    
+                // Update supplier information
+                $supplier->update([
+                    'Naam' => $request->Naam,
+                    'ContactPersoon' => $request->ContactPersoon,
+                    'LeverancierNummer' => $request->LeverancierNummer,
+                    'Mobiel' => $request->Mobiel,
+                ]);
+            });
+    
+            return redirect()->route('suppliers.show', $supplier->Id)
+                ->with('success', 'Leverancier succesvol bijgewerkt.');
+        } catch (\Exception $e) {
+            return redirect()->route('suppliers.edit', $supplier->Id)
+                ->with('error', $e->getMessage())
+                ->withInput();
+        }
     }
 
     public function deleteProduct($supplierId, $productId)

@@ -12,7 +12,7 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container-fluid">
-            <a class="navbar-brand" href="{{ url('/') }}">My App</a>
+            <a class="navbar-brand" href="{{ url('/') }}">Martijn App</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -38,7 +38,7 @@
 
     <footer class="bg-light text-center text-lg-start mt-5 py-3">
         <div class="container text-center">
-            &copy; {{ date('Y') }} My Laravel App. All rights reserved.
+            &copy; {{ date('Y') }} Martijn App. All rights reserved.
         </div>
     </footer>
 
